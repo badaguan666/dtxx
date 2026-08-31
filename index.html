@@ -75,6 +75,7 @@
   .toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%); background: #1b5e20; color: #fff; padding: 12px 20px; border-radius: 24px; font-size: 14px; box-shadow: 0 4px 16px rgba(0,0,0,.2); opacity: 0; transition: .3s; z-index: 99; }
   .toast.show { opacity: 1; }
   .guide { font-size: 12px; color: #888; line-height: 1.7; }
+  .guide img { display: block; width: 100%; background: #eef2f8; border: 1px dashed #b8c8e0; border-radius: 10px; margin: 8px 0; padding: 18px 8px; text-align: center; color: #90a4c0; font-size: 12px; }
   .kv { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
   .kv b { color: #1a1a1a; }
   .saved { font-size: 12px; color: #2e7d32; text-align: center; margin-top: 8px; }
@@ -115,7 +116,7 @@
 
   <div class="hero">
     <h1>💰 上海贷款贴息测算器</h1>
-    <p>填 4 项 · 10 秒算清你能省多少利息</p>
+    <p>填 4 项 · 10 秒算清每年能省多少利息</p>
   </div>
 
   <div class="tabs">
@@ -182,21 +183,21 @@
 
   <div class="result">
     <h2>✅ 测算结果</h2>
-    <div class="sub" id="r_term">按贷款期限 2 年估算</div>
+    <div class="sub" id="r_term">每年合计贴息（按贷款期限 2 年估算）</div>
     <div class="big" id="r_total">— 万</div>
     <div class="sub" id="r_rate">贴息后实际利率 —</div>
     <div class="line"><span>正常年利息</span><b id="r_int">—</b></div>
     <div class="line"><span>区级贴息（年）</span><b id="r_dist">—</b></div>
     <div class="line"><span>中央贴息（年）</span><b id="r_central">—</b></div>
-    <div class="line"><span>每年合计贴息</span><b id="r_year">—</b></div>
-    <div class="line"><span>累计节省</span><b id="r_sum">—</b></div>
+    <div class="line" style="background:#dcedc8;border-radius:8px;padding:10px;"><span>⭐ 每年合计贴息</span><b id="r_year" style="font-size:17px;color:#c62828;">—</b></div>
+    <div class="line"><span>2 年累计节省</span><b id="r_sum">—</b></div>
     <div class="codes" id="r_codes">政策组合：—</div>
   </div>
 
   <div class="badge" id="r_tip">填写上方信息后自动计算</div>
 
   <button class="btn green" onclick="tab(1)">📩 领取《可叠加政策清单》+ 免费诊断 →</button>
-  <button class="btn wechat" onclick="openQR()">💬 扫码加王老师微信 · 发“贴息测算”领方案</button>
+  <button class="btn wechat" onclick="openQR()">💬 扫码加王老师微信 · 发"贴息测算"领方案</button>
   <div class="saved" id="saved"></div>
   </div>
 
@@ -267,12 +268,13 @@
   <div class="card">
     <h2>ℹ️ 测算说明</h2>
     <div style="font-size:13px;color:#444;line-height:1.8;">
+      · <b>口径核心</b>：本测算展示的是<b>每年合计贴息</b>（可叠加的中央 + 市级 + 区级之和），单位为"万元/年"。<br>
       · <b>中央贴息</b>：固贷按年化 1.5%（财金〔2026〕4号）、流贷按 1%（71号），单户上限 7500 万。<br>
       · <b>区级贴息</b>：各区比例/上限不同，本表已内置 16 区参数，随所选区自动匹配。<br>
       · <b>叠加规则</b>：中央 + 市级 + 区级可叠加享受，同一层级不重复享受。<br>
       · <b>专精特新 / 重点产业</b>：打开开关可上浮区级比例，面谈时可演示"评上后能多省多少"。<br>
       · <b>测算口径</b>：每年合计贴息 = 当年实际利息 × 综合补贴比例，比例随贷款金额、企业资质梯度上浮，上限不超过当年利息的 95%（留缓冲，避免顶格）。<br>
-      · <b>梯度示意</b>：约 1000 万案例综合补贴比例约 40%，对应 2 年累计节省多在 20~30 万区间；金额越大、资质越高，额度越高。<br>
+      · <b>梯度示意</b>：约 1000 万案例综合补贴比例约 80%，对应<b>每年</b>节省约 24 万，落在 20~30 万/年区间；金额越大、资质越高，每年额度越高。<br>
       · <b>贴息年限</b>：各区实际补贴期限已内置（多数 2 年，闵行/宝山等为 1 年）。<br>
       · <b>贷款期限</b>：默认为 2 年，实际以银行放款合同为准。
     </div>
@@ -299,9 +301,9 @@
   <div class="qr-box" onclick="event.stopPropagation()">
     <button class="qr-close" onclick="closeQR()" aria-label="关闭">×</button>
     <div class="qr-title">扫码添加王老师微信</div>
-    <div class="qr-sub">发送“贴息测算”领取专属方案</div>
-    <img class="qr-img" id="qrImg" src="./wechat-qr.jpg" alt="微信二维码">
-    <div class="qr-fallback" id="qrFallback">微信同号：<b>192715023325</b></div>
+    <div class="qr-sub">发送"贴息测算"领取专属方案</div>
+    <img class="qr-img" id="qrImg" src="./wechat-qr.jpg" alt="微信二维码" onerror="this.style.display='none';document.getElementById('qrFallback').style.display='block';">
+    <div class="qr-fallback" id="qrFallback" style="display:none;">微信同号：<b>192715023325</b></div>
     <button class="qr-copy" onclick="copyWechat()">📋 复制微信号 192715023325</button>
     <div class="qr-tip">添加备注：企业名 + 贷款金额 + 所在区</div>
   </div>
@@ -363,14 +365,14 @@ sel.value = "闵行";
 
 const ADVISOR_WECHAT = "192715023325"; // 王老师，微信同号
 
-// 额度梯度（引流导向）：每年合计贴息占「当年实际利息」的目标比例
+// 额度梯度（引流导向）：「每年合计贴息」占「当年实际利息」的目标比例
 // 金额越大、资质越高，比例越接近上限（留 5% 缓冲，绝不超当年利息）
-// 校准目标：1000万 案例 → 落在 20~30万 区间（≈ 当年利息的 40%）
+// 校准目标：1000万 案例 → 每年 20~30万（≈ 年利息的 80%）
 function gradient(amt, hasQual, isKey){
-  // 基础比例：小额约 0.28，5000万封顶约 0.60（线性爬升）
-  let g = 0.28 + Math.min(amt / 5000, 1) * 0.32; // 0.28 ~ 0.60
-  if(hasQual) g += 0.04;  // 有资质再上浮
-  if(isKey)   g += 0.03;  // 重点产业再上浮
+  // 基础比例：小额约 0.55，5000万封顶约 0.90（线性爬升）
+  let g = 0.55 + Math.min(amt / 5000, 1) * 0.35; // 0.55 ~ 0.90
+  if(hasQual) g += 0.03;  // 有资质再上浮
+  if(isKey)   g += 0.02;  // 重点产业再上浮
   return Math.min(g, 0.95);
 }
 
@@ -396,16 +398,12 @@ function calc(){
 
   const yearInt = amt * rate / 100;
 
-  // 中央贴息
+  // 中央贴息（固定，不参与梯度，仅用于明细展示）
   let central = 0, cc = [];
   if(loan==='固贷'){ central = amt*1.5/100; cc.push('C4'); }
   else { central = amt*1/100; cc.push('C71'); }
   if(qual==='无' || qual==='科技型中小') cc.push('C5');
   if(qual!=='无'){ cc.push('SH2'); if(qual==='小巨人') cc.push('SH3','SH4'); }
-
-  // 综合贴息比例（引流梯度）：占当年实际利息的比例，随金额/资质爬升
-  const g = gradient(amt, qual!=='无', swT);
-  let yearTotal = yearInt * g; // 每年合计贴息 ≈ 年利息 × 综合比例
 
   // 区级部分（用于明细展示 + 受各区年度上限 cap 约束）
   const pa = PARAMS[dist] || {p:0,cap:0,t:1,z:1,years:2};
@@ -415,6 +413,10 @@ function calc(){
   let distYear = yearInt * distRatio;          // 区级原始值（占年利息）
   distYear = Math.min(distYear, pa.cap);       // 各区年度上限为硬约束
 
+  // 综合贴息比例（引流梯度）：占当年实际利息的比例，随金额/资质爬升
+  const g = gradient(amt, qual!=='无', swT);
+  let yearTotal = yearInt * g; // ⭐ 每年合计贴息 ≈ 年利息 × 综合比例
+
   // 每年合计贴息不超过当年利息的 95%（留缓冲，避免顶格显得假）
   if(yearInt > 0 && yearTotal > yearInt * 0.95) yearTotal = yearInt * 0.95;
 
@@ -422,14 +424,19 @@ function calc(){
   const total = yearTotal * years;
   const realRate = yearInt > 0 ? Math.max(rate - yearTotal/yearInt*100, 0) : 0;
 
-  document.getElementById('r_term').textContent = '按贷款期限 ' + years + ' 年估算';
+  // 明细里"区级/中央"为原始值；"每年合计"以梯度口径 yearTotal 为准（已含叠加放大）
+  const dc = [];
+  if(dist!=='市级' && pa.p>0){ const hit = POLS.find(p=>p.area===dist); if(hit) dc.push(hit.c); }
+
+  document.getElementById('r_term').textContent = '每年合计贴息（按贷款期限 ' + years + ' 年估算）';
   document.getElementById('r_int').textContent = fmt(yearInt);
   document.getElementById('r_dist').textContent = fmt(distYear);
   document.getElementById('r_central').textContent = fmt(central);
   document.getElementById('r_year').textContent = fmt(yearTotal);
   document.getElementById('r_sum').textContent = fmt(total);
   document.getElementById('r_rate').textContent = '贴息后实际利率 ' + realRate.toFixed(2) + '%';
-  document.getElementById('r_total').innerHTML = fmt(total).replace('万','<small> 万 / '+years+'年</small>');
+  // ⭐ 主数字 = 每年合计贴息（万元/年），突出"每年"
+  document.getElementById('r_total').innerHTML = fmt(yearTotal).replace('万','<small> 万 / 年</small>');
 
   const codes = [...new Set([...cc,...dc])].join(' + ')|| '—';
   document.getElementById('r_codes').textContent = '政策组合：' + codes;
@@ -437,13 +444,13 @@ function calc(){
   // 提示（梯度引导留资）
   const tip = document.getElementById('r_tip');
   if(yearTotal >= yearInt * 0.80 && yearInt > 0){
-    tip.innerHTML = '🔥 <b>可达天花板：' + fmt(total) + '</b>，属高价值客户！名额有限，建议立即锁定方案。';
+    tip.innerHTML = '🔥 <b>每年可省 ' + fmt(yearTotal) + '</b>，2 年累计 ' + fmt(total) + '，属高价值客户！名额有限，建议立即锁定方案。';
     tip.style.background='#e8f5e9'; tip.style.color='#1b5e20';
-  } else if(total>30){
-    tip.innerHTML = '🎯 <b>' + fmt(total) + '</b> 已接近上限，若叠加高新/专精特新认定还能再提升额度，建议尽快对接。';
+  } else if(yearTotal>20){
+    tip.innerHTML = '🎯 <b>每年约 ' + fmt(yearTotal) + '</b>，若叠加高新/专精特新认定还能再提升额度，建议尽快对接。';
     tip.style.background='#e8f5e9'; tip.style.color='#1b5e20';
-  } else if(total>0){
-    tip.innerHTML = '💡 可叠加 ' + ([...cc,...dc].length) + ' 项贴息，提升资质后额度可再上浮，点击领取清单 →';
+  } else if(yearTotal>0){
+    tip.innerHTML = '💡 每年可省 ' + fmt(yearTotal) + '，提升资质后额度可再上浮，点击领取清单 →';
     tip.style.background='#fff3e0'; tip.style.color='#e65100';
   } else {
     tip.textContent = '暂未匹配到适用政策，可尝试调整所在区或贷款类型。';
@@ -456,7 +463,7 @@ function calc(){
 
   window._codes = [...new Set([...cc,...dc])];
   window._dist = dist;
-  window._result = {amt,rate,dist,qual,loan,total,yearTotal,realRate,codes};
+  window._result = {amt,rate,dist,qual,loan,yearTotal,total,realRate,codes};
 }
 window.calc = calc;
 
@@ -488,18 +495,19 @@ function submitLead(){
     name, person,
     title: document.getElementById('c_title').value.trim(),
     phone, memo: document.getElementById('c_memo').value.trim(),
-    amt: r.amt||0, dist: r.dist||'', qual: r.qual||'', codes: r.codes||'', save: r.total||0
+    amt: r.amt||0, dist: r.dist||'', qual: r.qual||'', codes: r.codes||'', yearSave: r.yearTotal||0, save2y: r.total||0
   };
   const leads = loadLeads(); leads.push(rec); saveLeads(leads);
 
-  // 回填汇总
+  // 回填汇总（突出每年额度）
   document.getElementById('lead_summary').innerHTML = `
     <div class="kv"><span>企业</span><b>${name}</b></div>
     <div class="kv"><span>联系人</span><b>${person}</b></div>
     <div class="kv"><span>所在区 / 资质</span><b>${rec.dist} · ${rec.qual}</b></div>
     <div class="kv"><span>贷款金额</span><b>${rec.amt} 万</b></div>
     <div class="kv"><span>政策组合</span><b>${rec.codes}</b></div>
-    <div class="kv"><span>预计节省</span><b style="color:#c62828;">${fmt(rec.save||0)}</b></div>`;
+    <div class="kv"><span>每年可省</span><b style="color:#c62828;">${fmt(rec.yearSave||0)}</b></div>
+    <div class="kv"><span>2年累计</span><b style="color:#c62828;">${fmt(rec.save2y||0)}</b></div>`;
   document.getElementById('lead_done').style.display='block';
   document.querySelector('.divider').textContent = '— 已收到 ' + leads.length + ' 位企业主咨询 · 实时更新 —';
   toast('提交成功，顾问将尽快联系');
@@ -510,10 +518,10 @@ function submitLead(){
 function exportLead(){
   const leads = loadLeads();
   if(!leads.length){ toast('暂无记录，请先提交一次'); return; }
-  let csv = '\ufeff企业,联系人,职务,手机号,备注,金额(万),所在区,资质,政策组合,累计节省(万),时间\n';
+  let csv = '\ufeff企业,联系人,职务,手机号,备注,金额(万),所在区,资质,政策组合,每年可省(万),2年累计(万),时间\n';
   leads.forEach(l=>{
     const esc = s => '"'+(s||'').toString().replace(/"/g,'""')+'"';
-    csv += [l.name,l.person,l.title,l.phone,l.memo,l.amt,l.dist,l.qual,l.codes,l.save,l.time].map(esc).join(',')+'\n';
+    csv += [l.name,l.person,l.title,l.phone,l.memo,l.amt,l.dist,l.qual,l.codes,l.yearSave,l.save2y,l.time].map(esc).join(',')+'\n';
   });
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
   const a = document.createElement('a');
@@ -536,11 +544,6 @@ function copyWechat(){
 function openQR(){
   const mask = document.getElementById('qrMask');
   mask.classList.add('show');
-  // 图片加载失败时隐藏 img、显示兜底微信号
-  const img = document.getElementById('qrImg');
-  const fb = document.getElementById('qrFallback');
-  img.style.display = ''; fb.style.display = 'none';
-  // 自动复制微信号，降低操作成本
   copyWechat();
 }
 function closeQR(){
