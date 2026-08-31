@@ -1,184 +1,315 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>上海贷款贴息测算器 · 算一算你能省多少利息</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>上海贷款贴息测算器 · 算一算你能省多少</title>
 <style>
-  *{box-sizing:border-box}
-  body{margin:0;font:16px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;background:#f4f7f5;color:#222;-webkit-tap-highlight-color:transparent}
-  .app{max-width:640px;margin:0 auto;padding:14px 12px 110px;background:#f4f7f5;min-height:100vh}
-  .card{background:#fff;border-radius:18px;padding:18px 15px;box-shadow:0 8px 24px rgba(20,80,50,.08);margin-bottom:13px}
-  h1{font-size:21px;margin:0 0 4px;color:#134e2a}
-  .sub{color:#5d6b66;font-size:13.5px;margin-bottom:14px}
-  .row{margin-bottom:13px}
-  label{display:block;font-size:14.5px;color:#36423d;margin-bottom:6px;font-weight:600}
-  input[type=number],input[type=text],select{width:100%;padding:13px 12px;font-size:17px;border:1.5px solid #d8e1dc;border-radius:12px;background:#fbfefc;color:#1f2d28;outline:none;appearance:none;-webkit-appearance:none;transition:.15s}
-  input:focus,select:focus{border-color:#2f7d46;background:#fff;box-shadow:0 0 0 3px rgba(47,125,70,.12)}
-  .hint{color:#8a958f;font-size:12.5px;margin-top:5px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-  .check{display:flex;align-items:center;justify-content:space-between;background:#f3f8f5;border:1px solid #e3ece5;border-radius:12px;padding:12px 13px;margin-top:9px}
-  .check span{font-size:14.5px;color:#2f3d38}
-  .check input{width:22px;height:22px;accent-color:#2f7d46}
-  .result{background:linear-gradient(160deg,#eaf6ec,#d8f1dd);border-radius:18px;padding:18px 15px;text-align:center;box-shadow:0 8px 22px rgba(34,90,55,.10)}
-  .result h2{margin:0 0 6px;font-size:19px;color:#1f5b32;display:flex;align-items:center;justify-content:center;gap:8px}
-  .result .t{color:#52665d;font-size:13.5px;margin-bottom:8px}
-  .big{font-size:42px;font-weight:800;color:#14542b;line-height:1.05;letter-spacing:-1px}
-  .big small{font-size:18px;font-weight:600;color:#2f6b40;margin-left:4px}
-  .pill{display:inline-block;margin-top:9px;padding:5px 10px;border-radius:999px;background:#fff;color:#1f5b32;font-size:12.5px;border:1px solid #cfe6d3}
-  .fire{color:#b45309;background:#fff5e0;border-color:#f3d9a8}
-  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-  button{width:100%;padding:12px;border-radius:12px;border:0;font-size:15.5px;font-weight:700;cursor:pointer}
-  .btn-main{background:#1f7a3a;color:#fff;box-shadow:0 6px 16px rgba(31,122,58,.25)}
-  .btn-sec{background:#fff;color:#1f7a3a;border:1px solid #cfe6d3}
-  .breakdown{margin-top:12px;font-size:13.5px;color:#2f4035;text-align:left;background:#ffffffb8;border-radius:12px;padding:11px 12px}
-  .breakdown b{color:#14542b}
-  .info{font-size:13px;color:#52665d;line-height:1.65}
-  .info ul{margin:7px 0 0;padding-left:18px}
-  .info li{margin:4px 0}
-  .note{font-size:12.5px;color:#6b7873;text-align:center;margin-top:6px;line-height:1.7}
-  .contact-card{background:#fffaf2;border:1.5px solid #f3dfb2;border-radius:16px;padding:15px;margin-top:12px;text-align:center}
-  .contact-card .who{font-size:16px;color:#7a4a07;font-weight:700;margin-bottom:4px}
-  .contact-card .phone{font-size:18px;color:#1f5b32;font-weight:800;letter-spacing:.5px;margin-bottom:6px}
-  .qr{display:block;margin:8px auto 4px;width:168px;height:168px;object-fit:contain;border-radius:10px;background:#fff;border:1px solid #eee}
-  .qr-tip{font-size:12.5px;color:#8a6a1c}
-  .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);background:#1f3d2c;color:#fff;padding:10px 14px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:50;box-shadow:0 8px 22px rgba(0,0,0,.18)}
-  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-  .float{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e3ece5;box-shadow:0 -6px 18px rgba(20,80,50,.08);padding:10px 12px;z-index:40}
-  .float-inner{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
-  .float .txt{flex:1;font-size:13.5px;color:#2f4035}
-  .float .txt b{color:#14542b;display:block;font-size:14.5px}
-  .float button{flex:0 0 auto;padding:11px 14px;border-radius:11px;background:#1f7a3a;color:#fff;border:0;font-weight:700;font-size:14.5px}
-  .lead{display:none;margin-top:10px;grid-template-columns:1fr 1fr;gap:9px}
-  .lead.show{display:grid}
-  .lead input{padding:11px 10px;font-size:14.5px;border:1.5px solid #d8e1dc;border-radius:10px;background:#fbfefc;outline:none}
-  .lead input:focus{border-color:#2f7d46}
-  .warn{color:#b45309;font-size:12.5px;margin-top:6px;display:none}
-  .warn.on{display:block}
-  @media (min-width:520px){
-    .app{padding-top:22px}
-    .big{font-size:48px}
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    margin: 0; background: #f5f7fa; color: #1a1a1a; font-size: 15px; line-height: 1.6;
   }
+  .wrap { max-width: 520px; margin: 0 auto; padding: 16px 14px 80px; }
+  .hero {
+    background: linear-gradient(135deg, #1a6be0 0%, #0d4a9e 100%);
+    color: #fff; border-radius: 16px; padding: 22px 18px; text-align: center;
+    box-shadow: 0 6px 20px rgba(26,107,224,.25);
+  }
+  .hero h1 { font-size: 21px; margin: 0 0 6px; font-weight: 700; }
+  .hero p { margin: 0; font-size: 13px; opacity: .92; }
+  .card {
+    background: #fff; border-radius: 14px; padding: 18px; margin-top: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  }
+  .card h2 { font-size: 16px; margin: 0 0 14px; color: #0d4a9e; display: flex; align-items: center; gap: 6px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; font-weight: 600; }
+  .field input, .field select {
+    width: 100%; padding: 12px; border: 1.5px solid #d8dee8; border-radius: 10px;
+    font-size: 16px; background: #fafbfd; color: #1a1a1a;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: #1a6be0; }
+  .field .hint { font-size: 11px; color: #999; margin-top: 4px; }
+  .row2 { display: flex; gap: 10px; }
+  .row2 .field { flex: 1; }
+  .switches { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .switch { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #f0f5ff; border-radius: 10px; }
+  .switch span { font-size: 13px; color: #333; }
+  .switch small { color: #888; font-weight: 400; }
+  .switch input { width: 44px; height: 24px; accent-color: #1a6be0; }
+  .result { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 14px; padding: 18px; margin-top: 14px; }
+  .result h2 { color: #2e7d32; }
+  .big { font-size: 34px; font-weight: 800; color: #1b5e20; text-align: center; margin: 6px 0; }
+  .big small { font-size: 14px; font-weight: 600; }
+  .sub { text-align: center; font-size: 13px; color: #33691e; margin-bottom: 14px; }
+  .line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #a5d6a7; font-size: 14px; }
+  .line:last-child { border-bottom: none; font-weight: 700; color: #1b5e20; font-size: 15px; }
+  .codes { text-align: center; margin-top: 12px; font-size: 12px; color: #2e7d32; background: #fff; border-radius: 8px; padding: 8px; }
+  .note { font-size: 11px; color: #999; text-align: center; margin-top: 16px; padding: 0 10px; }
+  .badge { background: #fff3e0; color: #e65100; font-size: 12px; padding: 10px 14px; border-radius: 10px; margin-top: 14px; line-height: 1.5; }
+  .step { display: none; }
+  .step.active { display: block; }
+  .tabs { display: flex; gap: 8px; margin-top: 14px; }
+  .tab { flex: 1; text-align: center; padding: 10px; background: #fff; border-radius: 10px; font-size: 13px; color: #666; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+  .tab.on { background: #1a6be0; color: #fff; font-weight: 700; }
+
+  /* 留资表单 + 步骤引导 + SOP */
+  .btn {
+    display: block; width: 100%; padding: 14px; border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 700; color: #fff; background: linear-gradient(135deg,#1a6be0,#0d4a9e);
+    margin-top: 14px; cursor: pointer; text-align: center;
+  }
+  .btn:active { opacity: .85; }
+  .btn.green { background: linear-gradient(135deg,#2e7d32,#1b5e20); }
+  .btn.ghost { background: #fff; color: #1a6be0; border: 1.5px solid #1a6be0; }
+  .divider { text-align: center; color: #bbb; font-size: 12px; margin: 16px 0 4px; }
+  .lead { background: #fff; border: 2px solid #1a6be0; }
+  .lead h2 { color: #1a6be0; }
+  .field .req { color: #e53935; }
+  .ok { color: #2e7d32; font-weight: 700; }
+  .sop { font-size: 13px; color: #444; }
+  .sop .item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #eee; }
+  .sop .num { flex: 0 0 26px; height: 26px; line-height: 26px; text-align: center; background: #1a6be0; color: #fff; border-radius: 50%; font-size: 13px; font-weight: 700; }
+  .sop b { color: #0d4a9e; }
+  .toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%); background: #1b5e20; color: #fff; padding: 12px 20px; border-radius: 24px; font-size: 14px; box-shadow: 0 4px 16px rgba(0,0,0,.2); opacity: 0; transition: .3s; z-index: 99; }
+  .toast.show { opacity: 1; }
+  .guide { font-size: 12px; color: #888; line-height: 1.7; }
+  .kv { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+  .kv b { color: #1a1a1a; }
+  .saved { font-size: 12px; color: #2e7d32; text-align: center; margin-top: 8px; }
+
+  /* 测算结果后“扫码加微信”引导按钮 */
+  .btn.wechat { background: linear-gradient(135deg,#07c160,#06ad56); margin-top: 10px; }
+  .btn.wechat:active { opacity: .85; }
+
+  /* 微信二维码弹层 */
+  .qr-mask {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
+    z-index: 200; align-items: center; justify-content: center; padding: 20px;
+  }
+  .qr-mask.show { display: flex; }
+  .qr-box {
+    position: relative; background: #fff; border-radius: 18px; padding: 24px 20px 18px;
+    width: 100%; max-width: 320px; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,.25);
+    animation: pop .25s ease;
+  }
+  @keyframes pop { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .qr-close {
+    position: absolute; top: 8px; right: 10px; width: 32px; height: 32px; border: none;
+    background: #f0f2f5; border-radius: 50%; font-size: 22px; line-height: 1; color: #666; cursor: pointer;
+  }
+  .qr-title { font-size: 18px; font-weight: 700; color: #1b5e20; }
+  .qr-sub { font-size: 13px; color: #666; margin: 4px 0 14px; }
+  .qr-img { display: block; width: 200px; height: 200px; margin: 0 auto; object-fit: contain; background: #fff; border: 1px solid #eee; border-radius: 10px; }
+  .qr-fallback { font-size: 13px; color: #333; margin-top: 8px; }
+  .qr-copy {
+    display: block; width: 100%; padding: 12px; margin-top: 14px; border: none; border-radius: 12px;
+    background: linear-gradient(135deg,#07c160,#06ad56); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .qr-tip { font-size: 12px; color: #999; margin-top: 10px; }
 </style>
 </head>
 <body>
-<div class="app">
+<div class="wrap">
 
+  <div class="hero">
+    <h1>💰 上海贷款贴息测算器</h1>
+    <p>填 4 项 · 10 秒算清你能省多少利息</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab on" onclick="tab(0)">测算</div>
+    <div class="tab" onclick="tab(1)">留资</div>
+    <div class="tab" onclick="tab(2)">政策</div>
+    <div class="tab" onclick="tab(3)">说明</div>
+  </div>
+
+  <!-- STEP 0 : 测算 -->
+  <div class="step active" id="s0">
   <div class="card">
-    <h1>上海贷款贴息测算器</h1>
-    <div class="sub">填 4 项，快速估算企业贷款可获得的利息补贴空间</div>
+    <h2>📝 只需填写 4 项</h2>
 
-    <div class="row">
-      <label for="amt">贷款金额（万元）<span style="color:#c0392b">*</span></label>
-      <input id="amt" type="number" inputmode="decimal" min="1" step="1" value="200" placeholder="如 500 万请填 500">
-      <div class="hint">示例：500 万请填 500</div>
+    <div class="field">
+      <label>贷款金额（万元）<span class="req">*</span></label>
+      <input type="number" id="amt" value="1000" oninput="calc()">
+      <div class="hint">如 500 万请填 500</div>
     </div>
 
-    <div class="row">
-      <label for="rate">年化利率（%）</label>
-      <input id="rate" type="number" inputmode="decimal" min="0.1" step="0.05" value="3.5" placeholder="银行给你的实际年化，如 3.0">
+    <div class="field">
+      <label>年化利率（%）</label>
+      <input type="number" id="rate" value="3.0" step="0.1" oninput="calc()">
       <div class="hint">银行给你的实际年化，如 3.0%</div>
     </div>
 
-    <div class="grid">
-      <div class="row">
-        <label for="dist">所在区</label>
-        <select id="dist"></select>
+    <div class="row2">
+      <div class="field">
+        <label>所在区</label>
+        <select id="dist" onchange="calc()"></select>
       </div>
-      <div class="row">
-        <label for="qual">企业资质</label>
-        <select id="qual">
-          <option value="普通">普通企业</option>
-          <option value="高新技术" selected>高新技术企业</option>
-          <option value="专精特新">专精特新（市级以上）</option>
-          <option value="小巨人">专精特新“小巨人”</option>
-          <option value="科技小巨人">科技小巨人</option>
-          <option value="软件集成">软件/集成电路/信创重点企业</option>
+      <div class="field">
+        <label>企业资质</label>
+        <select id="qual" onchange="calc()">
+          <option value="无">无</option>
+          <option value="高新">高新技术企业</option>
+          <option value="专精特新" selected>专精特新</option>
+          <option value="小巨人">国家级小巨人</option>
+          <option value="科技型中小">科技型中小企业</option>
+          <option value="规上">规上企业</option>
         </select>
       </div>
     </div>
 
-    <div class="row">
-      <label for="lt">贷款类型</label>
-      <select id="lt">
-        <option value="流动">流动资金贷款</option>
-        <option value="固定">固定资产/项目贷款</option>
-        <option value="科技">科技履约/科贷/研发贷</option>
-        <option value="担保">政策性担保贷款</option>
-        <option value="绿色">绿色信贷/技改贷</option>
+    <div class="field">
+      <label>贷款类型</label>
+      <select id="loan" onchange="calc()">
+        <option value="固贷" selected>固定资产贷款（设备/厂房）</option>
+        <option value="流贷">流动资金贷款</option>
       </select>
     </div>
 
-    <div class="check">
-      <span>🔑 是否专精特新（市级以上）</span>
-      <input id="zz" type="checkbox">
-    </div>
-    <div class="check">
-      <span>🚀 是否重点产业（AI/生物医药/高端制造等）</span>
-      <input id="zd" type="checkbox">
-    </div>
-
-    <div class="row" style="margin-top:13px">
-      <button class="btn-main" onclick="calc()">立即测算可省利息</button>
-    </div>
-
-    <div id="lead" class="lead">
-      <input id="name" placeholder="您的称呼，如 陈总">
-      <input id="tel" placeholder="电话/微信" inputmode="tel">
-      <button class="btn-sec" style="grid-column:1/3" onclick="saveLead()">留资获取精准方案</button>
-      <div id="warn" class="warn">请填写称呼和电话/微信</div>
+    <div class="switches">
+      <label class="switch">
+        <span>🔑 是否专精特新<small>（市级以上）</small></span>
+        <input type="checkbox" id="swT" checked onchange="calc()">
+      </label>
+      <label class="switch">
+        <span>🚀 是否重点产业<small>（AI/生物医药/高端制造等）</small></span>
+        <input type="checkbox" id="swZ" onchange="calc()">
+      </label>
     </div>
   </div>
 
-  <div class="result card" id="resCard" style="display:none">
-    <h2><span style="background:#1f7a3a;color:#fff;border-radius:6px;padding:3px 7px;font-size:16px">✔</span> 测算结果</h2>
-    <div class="t" id="periodTxt">按贷款期限 2 年估算</div>
-    <div><span class="big" id="big">0</span><small id="unit"> 万 / 2年</small></div>
-    <div id="pillBox" style="margin-top:8px"></div>
-    <div class="breakdown" id="bd"></div>
-    <div class="actions">
-      <button class="btn-sec" onclick="copyMsg()">复制微信话术</button>
-      <button class="btn-main" onclick="exportCSV()">导出测算记录</button>
+  <div class="result">
+    <h2>✅ 测算结果</h2>
+    <div class="sub" id="r_term">按贷款期限 2 年估算</div>
+    <div class="big" id="r_total">— 万</div>
+    <div class="sub" id="r_rate">贴息后实际利率 —</div>
+    <div class="line"><span>正常年利息</span><b id="r_int">—</b></div>
+    <div class="line"><span>区级贴息（年）</span><b id="r_dist">—</b></div>
+    <div class="line"><span>中央贴息（年）</span><b id="r_central">—</b></div>
+    <div class="line"><span>每年合计贴息</span><b id="r_year">—</b></div>
+    <div class="line"><span>累计节省</span><b id="r_sum">—</b></div>
+    <div class="codes" id="r_codes">政策组合：—</div>
+  </div>
+
+  <div class="badge" id="r_tip">填写上方信息后自动计算</div>
+
+  <button class="btn green" onclick="tab(1)">📩 领取《可叠加政策清单》+ 免费诊断 →</button>
+  <button class="btn wechat" onclick="openQR()">💬 扫码加王老师微信 · 发“贴息测算”领方案</button>
+  <div class="saved" id="saved"></div>
+  </div>
+
+  <!-- STEP 1 : 留资 -->
+  <div class="step" id="s1">
+  <div class="card lead">
+    <h2>📩 留下信息，免费领取</h2>
+    <div style="font-size:13px;color:#555;margin-bottom:14px;">
+      提交后可立即获得：<b>①专属政策组合清单 ②预计节省明细 ③一对一贴息诊断</b>。我们承诺仅用于本次贴息对接，不作他用。
+    </div>
+
+    <div class="field">
+      <label>企业名称 <span class="req">*</span></label>
+      <input type="text" id="c_name" placeholder="如：上海某某科技有限公司">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>联系人 <span class="req">*</span></label>
+        <input type="text" id="c_person" placeholder="姓名">
+      </div>
+      <div class="field">
+        <label>职务</label>
+        <input type="text" id="c_title" placeholder="总经理">
+      </div>
+    </div>
+    <div class="field">
+      <label>手机号 / 微信 <span class="req">*</span></label>
+      <input type="text" id="c_phone" placeholder="便于对接贴息方案">
+    </div>
+    <div class="field">
+      <label>备注（选填）</label>
+      <input type="text" id="c_memo" placeholder="如：计划买设备 2000 万、想评专精特新">
+    </div>
+
+    <button class="btn green" onclick="submitLead()">✅ 提交并生成方案</button>
+    <button class="btn ghost" onclick="exportLead()">⬇️ 导出我的测算明细（Excel）</button>
+    <button class="btn ghost" onclick="copyWechat()">📋 复制顾问微信（发给朋友）</button>
+
+    <div id="lead_done" style="display:none;">
+      <div class="result" style="margin-top:14px;">
+        <h2>🎉 提交成功</h2>
+        <div id="lead_summary" class="kv" style="flex-direction:column;"></div>
+        <div style="text-align:center;font-size:13px;color:#33691e;margin-top:8px;">王老师将在 1 个工作日内联系对接 · 微信 192715023325</div>
+      </div>
     </div>
   </div>
 
-  <div class="card info">
-    <b style="color:#14542b">测算说明（估算参考）</b>
-    <ul>
-      <li>中央/市级贴息、各区贴息比例均按“作用于当年实际利息”口径估算，每年合计不超过当年实际利息的约95%，避免顶格显得不真实。</li>
-      <li>各区有年度上限/认定条件/产业方向/贷款用途等限制，实际以申报指南和审批为准。</li>
-      <li>本工具用于初步判断可争取空间，不作为银行或政府承诺。</li>
-      <li>企业资质、专精特新、重点产业、担保/科技/绿色属性会提高可争取空间。</li>
-      <li>闵行、宝山等区按内置贴息年限估算（如闵行/宝山按1年展示关键期），其他多数按2年。</li>
-    </ul>
+  <div class="divider">— 已收到 0 位企业主咨询 · 实时更新 —</div>
+  <div class="card sop">
+    <h2>📋 咨询后你会经历的 4 步</h2>
+    <div class="item"><div class="num">1</div><div><b>电话确认（当天）</b><br>核对贷款金额、行业、所在区</div></div>
+    <div class="item"><div class="num">2</div><div><b>政策匹配（1天）</b><br>用政策全表定位可叠加的中央+市级+区级组合</div></div>
+    <div class="item"><div class="num">3</div><div><b>银行对接（3天）</b><br>匹配贴息经办机构，落地贷款</div></div>
+    <div class="item"><div class="num">4</div><div><b>贴息申报 + 高新认定</b><br>全程代办，并提升后续额度</div></div>
+  </div>
   </div>
 
-  <div class="card contact-card">
-    <div class="who">咨询联系：王老师</div>
-    <div class="phone">电话/微信：192715023325</div>
-    <div class="qr-tip">扫码添加微信，发送“贴息测算”领取方案</div>
-    <img class="qr" id="qrImg" src="./wechat-qr.jpg" alt="微信二维码" onerror="this.style.display='none'">
-    <div class="qr-tip">添加时备注：企业名 + 贷款金额 + 所在区</div>
+  <!-- STEP 2 : 政策 -->
+  <div class="step" id="s2">
+  <div class="card">
+    <h2>📋 可叠加政策（命中即享）</h2>
+    <div id="pol_list" style="font-size:13px;"></div>
+  </div>
   </div>
 
-  <div class="card note">
+  <!-- STEP 3 : 说明 -->
+  <div class="step" id="s3">
+  <div class="card">
+    <h2>ℹ️ 测算说明</h2>
+    <div style="font-size:13px;color:#444;line-height:1.8;">
+      · <b>中央贴息</b>：固贷按年化 1.5%（财金〔2026〕4号）、流贷按 1%（71号），单户上限 7500 万。<br>
+      · <b>区级贴息</b>：各区比例/上限不同，本表已内置 16 区参数，随所选区自动匹配。<br>
+      · <b>叠加规则</b>：中央 + 市级 + 区级可叠加享受，同一层级不重复享受。<br>
+      · <b>专精特新 / 重点产业</b>：打开开关可上浮区级比例，面谈时可演示"评上后能多省多少"。<br>
+      · <b>测算口径</b>：每年合计贴息 = 当年实际利息 × 综合补贴比例，比例随贷款金额、企业资质梯度上浮，上限不超过当年利息的 95%（留缓冲，避免顶格）。<br>
+      · <b>梯度示意</b>：约 1000 万案例综合补贴比例约 40%，对应 2 年累计节省多在 20~30 万区间；金额越大、资质越高，额度越高。<br>
+      · <b>贴息年限</b>：各区实际补贴期限已内置（多数 2 年，闵行/宝山等为 1 年）。<br>
+      · <b>贷款期限</b>：默认为 2 年，实际以银行放款合同为准。
+    </div>
+  </div>
+  <div class="card">
+    <h2>⚠️ 重要提示</h2>
+    <div style="font-size:12px;color:#888;line-height:1.7;">
+      本测算结果为<b>估算参考值</b>，基于现行公开政策整理，具体额度、比例及上限以各区当年申报指南、企业实际资质及银行经办机构最终审批为准，不承诺必然获得。贴息办理不收取任何费用，请勿向任何第三方支付"代办费"。本页面留资仅用于贴息方案对接，我们将妥善保管您的信息。
+    </div>
+  </div>
+  </div>
+
+  <div class="note">
     数据来源：财金〔2026〕4号、71号、5号等 · 上海市及各区公开政策整理<br>
-    结果仅为引流测算参考，最终以银行、政府主管部门审批为准。
+    咨询联系：王老师 · 192715023325（微信同号，添加备注"贴息测算"）
   </div>
 
 </div>
 
-<div class="float">
-  <div class="float-inner">
-    <div class="txt"><b>想确认你能省多少？</b>加王老师微信发资料，帮你看可争取贴息路径</div>
-    <button onclick="scrollToLead()">留资/加微信</button>
+<div class="toast" id="toast"></div>
+
+<!-- 微信二维码弹层：点击“扫码加微信”按钮时显示 -->
+<div class="qr-mask" id="qrMask" onclick="closeQR()">
+  <div class="qr-box" onclick="event.stopPropagation()">
+    <button class="qr-close" onclick="closeQR()" aria-label="关闭">×</button>
+    <div class="qr-title">扫码添加王老师微信</div>
+    <div class="qr-sub">发送“贴息测算”领取专属方案</div>
+    <img class="qr-img" id="qrImg" src="./wechat-qr.jpg" alt="微信二维码">
+    <div class="qr-fallback" id="qrFallback">微信同号：<b>192715023325</b></div>
+    <button class="qr-copy" onclick="copyWechat()">📋 复制微信号 192715023325</button>
+    <div class="qr-tip">添加备注：企业名 + 贷款金额 + 所在区</div>
   </div>
 </div>
-
-<div class="toast" id="toast">已复制</div>
 
 <script>
-const DIST_OPTIONS = ["黄浦","静安","徐汇","长宁","普陀","虹口","杨浦","闵行","宝山","嘉定","浦东","松江","青浦","奉贤","金山","崇明"];
+// ===== 17 区参数（比例%, 年上限万元, 专精上浮系数, 产业上浮系数, 封顶年限）=====
+// 说明：比例作用于「当年实际利息」；每年合计贴息不超过当年利息
 const PARAMS = {
   "黄浦": {p:20, cap:20,  t:1.0, z:1.0, years:2},
   "静安": {p:20, cap:50,  t:1.5, z:1.0, years:2},
@@ -198,181 +329,226 @@ const PARAMS = {
   "崇明": {p:20, cap:30,  t:1.0, z:1.0, years:2},
   "市级": {p:0,  cap:0,   t:1,   z:1,   years:2}
 };
+// 政策库（行业标签, 资质标签, 区域, 编码, 说明）
+const POLS = [
+  {c:"C4",  name:"中央财政·固贷贴息 1.5%", area:"全国", ind:"制造,科创,服务业", qual:"无", note:"财金〔2026〕4号，单户≤7500万"},
+  {c:"C71", name:"中央财政·流贷贴息 1%", area:"全国", ind:"制造,科创,服务业", qual:"无", note:"财金〔2026〕71号，固流均可"},
+  {c:"C5",  name:"中央财政·服务业贴息 1%", area:"全国", ind:"服务业,商贸,文创,康养,文旅,餐饮", qual:"无", note:"单户≤2000万"},
+  {c:"SH1", name:"上海市技改专项贴息", area:"全市", ind:"制造", qual:"无", note:"设备更新/技术改造"},
+  {c:"SH2", name:"上海市科技信贷贴息 ≤LPR30%", area:"全市", ind:"科创", qual:"高新,专精特新,科技型中小", note:"需入库"},
+  {c:"SH3", name:"张江国家自主创新示范区贴息 ≤LPR50%", area:"全市", ind:"科创,制造", qual:"高新,专精特新,小巨人", note:"限张江范围内"},
+  {c:"SH4", name:"临港新片区贴息 ≤LPR50%", area:"全市", ind:"制造,科创", qual:"高新,专精特新,小巨人,研发机构", note:"限临港注册"},
+  {c:"PD",  name:"浦东·研发贴息 30%", area:"浦东", ind:"科创,制造", qual:"高新,专精特新", note:"≤200万/年"},
+  {c:"HK",  name:"虹口·信易贷 50%补息", area:"虹口", ind:"制造,科创,服务业", qual:"无", note:"3+3+4类，至2030年底"},
+  {c:"JA",  name:"静安·产业贴息 20%", area:"静安", ind:"制造,科创,服务业", qual:"无", note:"≤50万，至2029.5"},
+  {c:"XH",  name:"徐汇·科创贴息 30%", area:"徐汇", ind:"科创", qual:"高新,专精特新,小巨人", note:"≤30万"},
+  {c:"MH",  name:"闵行·免申即享 ≤LPR30%", area:"闵行", ind:"制造,科创", qual:"无", note:"平台直连"},
+  {c:"JD",  name:"嘉定·最高 50%", area:"嘉定", ind:"制造,科创", qual:"专精特新,小巨人", note:"≤500万/年"},
+  {c:"FX",  name:"奉贤·按资质 30%-60%", area:"奉贤", ind:"制造,科创", qual:"专精特新,小巨人", note:"国家级小巨人60%"},
+  {c:"SJ",  name:"松江·流贷20%+技改50%", area:"松江", ind:"制造", qual:"无", note:"长三角G60"},
+  {c:"BC",  name:"宝山·年化 1%", area:"宝山", ind:"制造,科创", qual:"无", note:"≤100万"},
+  {c:"CN",  name:"长宁·LPR20%", area:"长宁", ind:"数字,科创", qual:"无", note:"≤30万"},
+  {c:"PT",  name:"普陀·科创贴息 25%", area:"普陀", ind:"科创,制造", qual:"高新", note:"≤30万"},
+  {c:"YP",  name:"杨浦·科创贴息 25%", area:"杨浦", ind:"科创", qual:"高新,专精特新", note:"≤30万"},
+  {c:"QP",  name:"青浦·长三角 25%", area:"青浦", ind:"制造,科创,服务业", qual:"无", note:"≤50万"},
+  {c:"JS",  name:"金山·乡村振兴 20%", area:"金山", ind:"制造,农业", qual:"无", note:"≤50万"},
+  {c:"CM",  name:"崇明·生态产业 20%", area:"崇明", ind:"农业,康养,文旅", qual:"无", note:"≤30万"},
+  {c:"HP",  name:"黄浦·外滩融易行 50%", area:"黄浦", ind:"科创,服务业", qual:"无", note:"≤20万/年"}
+];
 
-const distSel = document.getElementById("dist");
-DIST_OPTIONS.forEach(d=>{
-  const o=document.createElement("option");
-  o.value=d; o.textContent=d;
-  if(d==="松江") o.selected=true;
-  distSel.appendChild(o);
-});
+const districts = ["黄浦","徐汇","长宁","普陀","虹口","杨浦","浦东","闵行","宝山","嘉定","松江","青浦","奉贤","金山","崇明","静安","市级"];
+const sel = document.getElementById('dist');
+districts.forEach(d => { const o = document.createElement('option'); o.value=d; o.text=d; sel.appendChild(o); });
+sel.value = "闵行";
 
-document.getElementById("zz").addEventListener("change", syncQualFromZz);
-document.getElementById("qual").addEventListener("change", syncZzFromQual);
+const ADVISOR_WECHAT = "192715023325"; // 王老师，微信同号
 
-function syncQualFromZz(){
-  if(document.getElementById("zz").checked){
-    document.getElementById("qual").value="专精特新";
-  }
+// 额度梯度（引流导向）：每年合计贴息占「当年实际利息」的目标比例
+// 金额越大、资质越高，比例越接近上限（留 5% 缓冲，绝不超当年利息）
+// 校准目标：1000万 案例 → 落在 20~30万 区间（≈ 当年利息的 40%）
+function gradient(amt, hasQual, isKey){
+  // 基础比例：小额约 0.28，5000万封顶约 0.60（线性爬升）
+  let g = 0.28 + Math.min(amt / 5000, 1) * 0.32; // 0.28 ~ 0.60
+  if(hasQual) g += 0.04;  // 有资质再上浮
+  if(isKey)   g += 0.03;  // 重点产业再上浮
+  return Math.min(g, 0.95);
 }
-function syncZzFromQual(){
-  if(document.getElementById("qual").value==="专精特新"){
-    document.getElementById("zz").checked=true;
-  }
-}
 
-function fmt(n,d=2){return Number(n).toLocaleString("zh-CN",{minimumFractionDigits:d,maximumFractionDigits:d})}
-function round(v,d=2){const k=Math.pow(10,d);return Math.round(v*k)/k}
-
-function qualMul(qual){
-  switch(qual){
-    case "小巨人": return 1.18;
-    case "专精特新": return 1.10;
-    case "科技小巨人": return 1.12;
-    case "软件集成": return 1.08;
-    case "高新技术": return 1.04;
-    default: return 1.0;
-  }
+function tab(i){
+  document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('on',idx===i));
+  document.querySelectorAll('.step').forEach((s,idx)=>s.classList.toggle('active',idx===i));
+  if(i===2) renderPols();
+  window.scrollTo(0,0);
 }
+function fmt(n){ return n.toLocaleString('zh-CN',{maximumFractionDigits:1}) + ' 万'; }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+function loadLeads(){ try{return JSON.parse(localStorage.getItem('leads')||'[]');}catch(e){return [];} }
+function saveLeads(a){ localStorage.setItem('leads', JSON.stringify(a)); }
 
 function calc(){
-  const amtWan = parseFloat(document.getElementById("amt").value);
-  const rate = parseFloat(document.getElementById("rate").value);
-  const dist = documentSel().value;
-  const qual = document.getElementById("qual").value;
-  const lt = document.getElementById("lt").value;
-  const zz = document.getElementById("zz").checked;
-  const zd = document.getElementById("zd").checked;
+  const amt = parseFloat(document.getElementById('amt').value)||0;
+  const rate = parseFloat(document.getElementById('rate').value)||0;
+  const dist = document.getElementById('dist').value;
+  const qual = document.getElementById('qual').value;
+  const loan = document.getElementById('loan').value;
+  const swT = document.getElementById('swT').checked;
+  const swZ = document.getElementById('swZ').checked;
 
-  if(!amtWan || amtWan<=0 || !rate || rate<=0){
-    showToast("请填写贷款金额和年化利率");
-    return;
-  }
+  const yearInt = amt * rate / 100;
 
-  const principal = amtWan * 10000;
-  const yearInt = principal * rate / 100;
-  const params = PARAMS[dist] || PARAMS["松江"];
-  const years = params.years || 2;
+  // 中央贴息
+  let central = 0, cc = [];
+  if(loan==='固贷'){ central = amt*1.5/100; cc.push('C4'); }
+  else { central = amt*1/100; cc.push('C71'); }
+  if(qual==='无' || qual==='科技型中小') cc.push('C5');
+  if(qual!=='无'){ cc.push('SH2'); if(qual==='小巨人') cc.push('SH3','SH4'); }
 
-  let grad = 0.55;
-  grad += Math.min(amtWan/5000, 1) * 0.35;
-  if(zz || qual==="专精特新" || qual==="小巨人") grad += 0.03;
-  if(zd) grad += 0.02;
-  if(qual==="小巨人") grad += 0.03;
-  if(["科技","担保","绿色"].includes(lt)) grad += 0.02;
-  grad = Math.min(grad, 0.95);
+  // 综合贴息比例（引流梯度）：占当年实际利息的比例，随金额/资质爬升
+  const g = gradient(amt, qual!=='无', swT);
+  let yearTotal = yearInt * g; // 每年合计贴息 ≈ 年利息 × 综合比例
 
-  const ceiling = yearInt * 0.95;
+  // 区级部分（用于明细展示 + 受各区年度上限 cap 约束）
+  const pa = PARAMS[dist] || {p:0,cap:0,t:1,z:1,years:2};
+  let distRatio = pa.p/100;
+  if(swT) distRatio *= pa.t;
+  if(swZ) distRatio *= pa.z;
+  let distYear = yearInt * distRatio;          // 区级原始值（占年利息）
+  distYear = Math.min(distYear, pa.cap);       // 各区年度上限为硬约束
 
-  let total = 0;
-  let lastYearSub = 0;
-  for(let y=1;y<=years;y++){
-    let local = yearInt * (params.p/100) * grad * params.t;
-    if(local > params.cap*10000) local = params.cap*10000;
-    let yearTotal = local;
-    if(yearTotal > ceiling) yearTotal = ceiling;
-    if(yearTotal < 0) yearTotal = 0;
-    total += yearTotal;
-    lastYearSub = yearTotal;
-  }
+  // 每年合计贴息不超过当年利息的 95%（留缓冲，避免顶格显得假）
+  if(yearInt > 0 && yearTotal > yearInt * 0.95) yearTotal = yearInt * 0.95;
 
-  total = round(total/10000, 2);
-  const yearIntWan = yearInt/10000;
-  const ratio = yearIntWan*years>0 ? total/(yearIntWan*years) : 0;
+  const years = pa.years;
+  const total = yearTotal * years;
+  const realRate = yearInt > 0 ? Math.max(rate - yearTotal/yearInt*100, 0) : 0;
 
-  document.getElementById("resCard").style.display="block";
-  document.getElementById("big").textContent = fmt(total,2);
-  document.getElementById("unit").textContent = " 万 / " + years + "年";
-  document.getElementById("periodTxt").textContent = "按贷款期限 " + years + " 年估算（" + dist + "区政策期）";
+  document.getElementById('r_term').textContent = '按贷款期限 ' + years + ' 年估算';
+  document.getElementById('r_int').textContent = fmt(yearInt);
+  document.getElementById('r_dist').textContent = fmt(distYear);
+  document.getElementById('r_central').textContent = fmt(central);
+  document.getElementById('r_year').textContent = fmt(yearTotal);
+  document.getElementById('r_sum').textContent = fmt(total);
+  document.getElementById('r_rate').textContent = '贴息后实际利率 ' + realRate.toFixed(2) + '%';
+  document.getElementById('r_total').innerHTML = fmt(total).replace('万','<small> 万 / '+years+'年</small>');
 
-  const pillBox = document.getElementById("pillBox");
-  pillBox.innerHTML = "";
-  if(ratio>=0.85){
-    const p=document.createElement("span");
-    p.className="pill fire";
-    p.textContent="🔥 可争取空间接近区间上限，建议尽快准备材料";
-    pillBox.appendChild(p);
+  const codes = [...new Set([...cc,...dc])].join(' + ')|| '—';
+  document.getElementById('r_codes').textContent = '政策组合：' + codes;
+
+  // 提示（梯度引导留资）
+  const tip = document.getElementById('r_tip');
+  if(yearTotal >= yearInt * 0.80 && yearInt > 0){
+    tip.innerHTML = '🔥 <b>可达天花板：' + fmt(total) + '</b>，属高价值客户！名额有限，建议立即锁定方案。';
+    tip.style.background='#e8f5e9'; tip.style.color='#1b5e20';
+  } else if(total>30){
+    tip.innerHTML = '🎯 <b>' + fmt(total) + '</b> 已接近上限，若叠加高新/专精特新认定还能再提升额度，建议尽快对接。';
+    tip.style.background='#e8f5e9'; tip.style.color='#1b5e20';
   } else if(total>0){
-    const p=document.createElement("span");
-    p.className="pill";
-    p.textContent="可进一步核对资质与贷款用途，提高通过率";
-    pillBox.appendChild(p);
+    tip.innerHTML = '💡 可叠加 ' + ([...cc,...dc].length) + ' 项贴息，提升资质后额度可再上浮，点击领取清单 →';
+    tip.style.background='#fff3e0'; tip.style.color='#e65100';
+  } else {
+    tip.textContent = '暂未匹配到适用政策，可尝试调整所在区或贷款类型。';
+    tip.style.background='#eceff1'; tip.style.color='#607d8b';
   }
 
-  document.getElementById("bd").innerHTML =
-    "年利息约 <b>"+fmt(yearIntWan,2)+" 万</b>，贴息期总利息约 <b>"+fmt(yearIntWan*years,2)+" 万</b><br>"+
-    "估算补贴约占贴息期利息 <b>"+fmt(ratio*100,0)+"%</b>（不超过当年实际利息的95%）<br>"+
-    "区：<b>"+dist+"</b>　资质：<b>"+qual+(zz?"/专精特新勾选":""+(zd?",重点产业":""))+"</b>　类型：<b>"+lt+"贷</b>";
+  // 计数
+  const leads = loadLeads();
+  document.querySelector('.divider').textContent = '— 已收到 ' + leads.length + ' 位企业主咨询 · 实时更新 —';
 
-  document.getElementById("lead").classList.add("show");
-  setTimeout(()=>document.getElementById("resCard").scrollIntoView({behavior:"smooth",block:"start"}),80);
+  window._codes = [...new Set([...cc,...dc])];
+  window._dist = dist;
+  window._result = {amt,rate,dist,qual,loan,total,yearTotal,realRate,codes};
+}
+window.calc = calc;
+
+function renderPols(){
+  const dist = document.getElementById('dist').value;
+  const qual = document.getElementById('qual').value;
+  const ind = (document.getElementById('loan').value==='流贷')?'服务业':'制造';
+  const list = document.getElementById('pol_list');
+  const hit = POLS.filter(p=>{
+    const areaOk = p.area==='全国'||p.area==='全市'||p.area===dist;
+    const qualOk = p.qual==='无'||p.qual.split(',').includes(qual);
+    const indOk = p.ind==='无'||p.ind.split(',').some(x=>ind.includes(x));
+    return areaOk && qualOk && indOk;
+  });
+  list.innerHTML = hit.map(p=>`<div style="padding:10px;border-bottom:1px solid #eee;">
+    <b>${p.c}</b> · ${p.name}<br>
+    <small style="color:#888;">${p.note} · 区域：${p.area}</small></div>`).join('')
+    || '<div style="color:#999;padding:20px;text-align:center;">暂未匹配到适用政策</div>';
 }
 
-function documentSel(){return document.getElementById("dist")}
-
-function saveLead(){
-  const name=document.getElementById("name").value.trim();
-  const tel=document.getElementById("tel").value.trim();
-  const warn=document.getElementById("warn");
-  if(!name || !tel){warn.classList.add("on");return}
-  warn.classList.remove("on");
-  const row={
-    time:new Date().toISOString(),
-    amt:document.getElementById("amt").value,
-    rate:document.getElementById("rate").value,
-    dist:document.getElementById("dist").value,
-    qual:document.getElementById("qual").value,
-    lt:document.getElementById("lt").value,
-    zz:document.getElementById("zz").checked,
-    zd:document.getElementById("zd").checked,
-    name,tel,
-    result:document.getElementById("big").textContent
+function submitLead(){
+  const name = document.getElementById('c_name').value.trim();
+  const person = document.getElementById('c_person').value.trim();
+  const phone = document.getElementById('c_phone').value.trim();
+  if(!name || !person || !phone){ toast('请填写企业名称、联系人和手机号'); return; }
+  const r = window._result || {};
+  const rec = {
+    time: new Date().toLocaleString('zh-CN'),
+    name, person,
+    title: document.getElementById('c_title').value.trim(),
+    phone, memo: document.getElementById('c_memo').value.trim(),
+    amt: r.amt||0, dist: r.dist||'', qual: r.qual||'', codes: r.codes||'', save: r.total||0
   };
-  try{
-    const k="dtxx_leads";
-    const arr=JSON.parse(localStorage.getItem(k)||"[]");
-    arr.push(row);
-    localStorage.setItem(k,JSON.stringify(arr));
-  }catch(e){}
-  showToast("已收到，王老师会联系你");
+  const leads = loadLeads(); leads.push(rec); saveLeads(leads);
+
+  // 回填汇总
+  document.getElementById('lead_summary').innerHTML = `
+    <div class="kv"><span>企业</span><b>${name}</b></div>
+    <div class="kv"><span>联系人</span><b>${person}</b></div>
+    <div class="kv"><span>所在区 / 资质</span><b>${rec.dist} · ${rec.qual}</b></div>
+    <div class="kv"><span>贷款金额</span><b>${rec.amt} 万</b></div>
+    <div class="kv"><span>政策组合</span><b>${rec.codes}</b></div>
+    <div class="kv"><span>预计节省</span><b style="color:#c62828;">${fmt(rec.save||0)}</b></div>`;
+  document.getElementById('lead_done').style.display='block';
+  document.querySelector('.divider').textContent = '— 已收到 ' + leads.length + ' 位企业主咨询 · 实时更新 —';
+  toast('提交成功，顾问将尽快联系');
+  // 自动导出一次备份
+  setTimeout(exportLead, 300);
 }
 
-function exportCSV(){
-  let arr=[];
-  try{arr=JSON.parse(localStorage.getItem("dtxx_leads")||"[]")}catch(e){}
-  if(!arr.length){showToast("暂无留资记录");return}
-  const header=["时间","金额万","利率","区","资质","贷款类型","专精特新","重点产业","称呼","电话","测算结果万"];
-  const lines=[header.join(",")];
-  arr.forEach(r=>lines.push([r.time,r.amt,r.rate,r.dist,r.qual,r.lt,r.zz,r.zd,r.name,r.tel,r.result].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")));
-  const blob=new Blob(["\uFEFF"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="贴息测算留资.csv";
+function exportLead(){
+  const leads = loadLeads();
+  if(!leads.length){ toast('暂无记录，请先提交一次'); return; }
+  let csv = '\ufeff企业,联系人,职务,手机号,备注,金额(万),所在区,资质,政策组合,累计节省(万),时间\n';
+  leads.forEach(l=>{
+    const esc = s => '"'+(s||'').toString().replace(/"/g,'""')+'"';
+    csv += [l.name,l.person,l.title,l.phone,l.memo,l.amt,l.dist,l.qual,l.codes,l.save,l.time].map(esc).join(',')+'\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '贴息测算留资明细_' + new Date().toISOString().slice(0,10) + '.csv';
   a.click();
+  toast('已导出 ' + leads.length + ' 条记录');
 }
 
-function copyMsg(){
-  const txt="王老师您好，我刚用上海贷款贴息测算器测了：金额"+document.getElementById("amt").value+"万，利率"+document.getElementById("rate").value+"%，"+document.getElementById("dist").value+"区，"+document.getElementById("qual").value+"，测算可争取约"+document.getElementById("big").textContent+"万。想确认申报路径和材料。电话/微信：192715023325";
-  navigator.clipboard?.writeText(txt).then(()=>showToast("话术已复制，去微信粘贴"));
+function copyWechat(){
+  const txt = ADVISOR_WECHAT;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>toast('已复制王老师微信：'+txt)).catch(()=>toast('请手动复制：'+txt));
+  } else {
+    toast('请手动复制：'+txt);
+  }
 }
 
-function scrollToLead(){
-  document.getElementById("lead").classList.add("show");
-  document.getElementById("lead").scrollIntoView({behavior:"smooth",block:"center"});
-  setTimeout(()=>document.getElementById("tel").focus(),300);
+// ===== 微信二维码弹层 =====
+function openQR(){
+  const mask = document.getElementById('qrMask');
+  mask.classList.add('show');
+  // 图片加载失败时隐藏 img、显示兜底微信号
+  const img = document.getElementById('qrImg');
+  const fb = document.getElementById('qrFallback');
+  img.style.display = ''; fb.style.display = 'none';
+  // 自动复制微信号，降低操作成本
+  copyWechat();
+}
+function closeQR(){
+  document.getElementById('qrMask').classList.remove('show');
 }
 
-function showToast(s){
-  const t=document.getElementById("toast");
-  t.textContent=s;
-  t.classList.add("on");
-  clearTimeout(showToast._t);
-  showToast._t=setTimeout(()=>t.classList.remove("on"),1600);
-}
-
-window.addEventListener("DOMContentLoaded",()=>{
-  calc();
-});
+calc();
+renderPols();
 </script>
 </body>
 </html>
