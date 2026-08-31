@@ -54,7 +54,7 @@
   .tab { flex: 1; text-align: center; padding: 10px; background: #fff; border-radius: 10px; font-size: 13px; color: #666; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
   .tab.on { background: #1a6be0; color: #fff; font-weight: 700; }
 
-  /* 新增：留资表单 + 步骤引导 + SOP */
+  /* 留资表单 + 步骤引导 + SOP */
   .btn {
     display: block; width: 100%; padding: 14px; border: none; border-radius: 12px;
     font-size: 16px; font-weight: 700; color: #fff; background: linear-gradient(135deg,#1a6be0,#0d4a9e);
@@ -75,7 +75,6 @@
   .toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%); background: #1b5e20; color: #fff; padding: 12px 20px; border-radius: 24px; font-size: 14px; box-shadow: 0 4px 16px rgba(0,0,0,.2); opacity: 0; transition: .3s; z-index: 99; }
   .toast.show { opacity: 1; }
   .guide { font-size: 12px; color: #888; line-height: 1.7; }
-  .guide img { display: block; width: 100%; background: #eef2f8; border: 1px dashed #b8c8e0; border-radius: 10px; margin: 8px 0; padding: 18px 8px; text-align: center; color: #90a4c0; font-size: 12px; }
   .kv { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
   .kv b { color: #1a1a1a; }
   .saved { font-size: 12px; color: #2e7d32; text-align: center; margin-top: 8px; }
@@ -153,14 +152,14 @@
 
   <div class="result">
     <h2>✅ 测算结果</h2>
-    <div class="sub">按贷款期限 2 年估算</div>
+    <div class="sub" id="r_years">按贷款期限 2 年估算</div>
     <div class="big" id="r_total">— 万</div>
     <div class="sub" id="r_rate">贴息后实际利率 —</div>
     <div class="line"><span>正常年利息</span><b id="r_int">—</b></div>
     <div class="line"><span>区级贴息（年）</span><b id="r_dist">—</b></div>
     <div class="line"><span>中央贴息（年）</span><b id="r_central">—</b></div>
     <div class="line"><span>每年合计贴息</span><b id="r_year">—</b></div>
-    <div class="line"><span>2 年累计节省</span><b id="r_sum">—</b></div>
+    <div class="line"><span>累计节省</span><b id="r_sum">—</b></div>
     <div class="codes" id="r_codes">政策组合：—</div>
   </div>
 
@@ -237,17 +236,19 @@
   <div class="card">
     <h2>ℹ️ 测算说明</h2>
     <div style="font-size:13px;color:#444;line-height:1.8;">
-      · <b>中央贴息</b>：固贷按年化 1.5%（财金〔2026〕4号）、流贷按 1%（71号），单户上限 7500 万。<br>
-      · <b>区级贴息</b>：各区比例/上限不同，本表已内置 16 区参数，随所选区自动匹配。<br>
+      · <b>计算口径</b>：贴息比例作用于<b>年利息</b>（本金 × 年化利率），而非本金。<br>
+      · <b>中央贴息</b>：固贷年化 1.5%（财金〔2026〕4号）、流贷年化 1%（71号），单户上限 7500 万。<br>
+      · <b>区级贴息</b>：各区比例 / 年度上限不同，已内置 16 区参数，随所选区自动匹配。<br>
+      · <b>上限约束</b>：每年合计贴息（中央+区级）不超过<b>当年实际利息</b>。<br>
+      · <b>贴息年限</b>：各区实际补贴期限不同（如闵行、宝山为 1 年，其余多为 2 年），已内置。<br>
       · <b>叠加规则</b>：中央 + 市级 + 区级可叠加享受，同一层级不重复享受。<br>
-      · <b>专精特新 / 重点产业</b>：打开开关可上浮区级比例，面谈时可演示"评上后能多省多少"。<br>
-      · <b>贷款期限</b>：默认为 2 年，实际以银行放款合同为准。
+      · <b>专精特新 / 重点产业</b>：打开开关可上浮区级比例，面谈时可演示"评上后能多省多少"。
     </div>
   </div>
   <div class="card">
     <h2>⚠️ 重要提示</h2>
-    <div style="font-size:12px;color:#888;line-height:1.7;">
-      本测算结果基于现行公开政策整理，具体以各区当年申报指南及银行经办机构最新公告为准。本工具仅供参考，不构成任何承诺或保证。贴息办理不收取任何费用，请勿向任何第三方支付"代办费"。本页面留资仅用于贴息方案对接，我们将妥善保管您的信息。
+    <div style="font-size:12px;color:#c62828;line-height:1.7;">
+      <b>本测算结果为估算参考值</b>，具体贴息金额以各区当年申报指南、银行经办机构审核结果及实际放款合同为准。本工具仅供参考，不构成任何承诺或保证。贴息办理不收取任何费用，请勿向任何第三方支付"代办费"。本页面留资仅用于贴息方案对接，我们将妥善保管您的信息。
     </div>
   </div>
   </div>
@@ -262,25 +263,26 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== 17 区参数（比例%, 年上限万元, 专精上浮系数, 产业上浮系数, 封顶年限）=====
+// ===== 17 区参数（比例%, 年度上限万元, 专精上浮系数, 产业上浮系数, 贴息年限年）=====
+// 说明：比例作用于「年利息」；年度上限为每年最高补贴额；years 为该区实际补贴期限。
 const PARAMS = {
-  "黄浦": {p:50, cap:20,  t:1.3, z:1.3, years:2},
-  "静安": {p:20, cap:50,  t:1.3, z:1.3, years:2},
-  "徐汇": {p:40, cap:30,  t:1.1, z:1.1, years:2},
-  "长宁": {p:20, cap:20,  t:1.3, z:1.3, years:2},
-  "普陀": {p:30, cap:30,  t:1.1, z:1.1, years:2},
-  "虹口": {p:50, cap:30,  t:1.3, z:1.3, years:2},
-  "杨浦": {p:30, cap:30,  t:1.1, z:1.1, years:2},
-  "闵行": {p:30, cap:30,  t:1.1, z:1.1, years:2},
-  "宝山": {p:25, cap:30,  t:1.3, z:1.3, years:2},
-  "嘉定": {p:50, cap:500,  t:1.1, z:1.1, years:2},
-  "浦东": {p:50, cap:200,  t:1.1, z:1.1, years:2},
-  "松江": {p:20, cap:30,  t:1.3, z:1.3, years:2},
-  "青浦": {p:25, cap:20,  t:1.3, z:1.3, years:2},
-  "奉贤": {p:30, cap:100,  t:1.3, z:1.3, years:2},
-  "金山": {p:25, cap:30,  t:1.3, z:1.3, years:2},
-  "崇明": {p:15, cap:20,  t:1.3, z:1.3, years:2},
-  "市级": {p:0,  cap:0,   t:1,   z:1,   years:2}
+  "黄浦": {p:20, cap:20,  t:1.0, z:1.0, years:2},
+  "静安": {p:20, cap:50,  t:1.5, z:1.0, years:2},   // 科创型基准利率30%(≤50万)，其他20%(≤20万)
+  "徐汇": {p:30, cap:30,  t:1.0, z:1.0, years:2},
+  "长宁": {p:20, cap:30,  t:1.0, z:1.0, years:2},
+  "普陀": {p:25, cap:30,  t:1.0, z:1.0, years:2},
+  "虹口": {p:50, cap:30,  t:1.0, z:1.0, years:2},   // 信易贷 50% 补息
+  "杨浦": {p:25, cap:30,  t:1.2, z:1.0, years:2},
+  "闵行": {p:20, cap:200, t:1.0, z:1.0, years:1},   // 高质量发展专项：实际利息20%，上限200万，补贴期1年
+  "宝山": {p:25, cap:20,  t:1.0, z:1.0, years:1},   // 年化1%(100BP)，补贴期≤12个月，单户贷款≤2000万
+  "嘉定": {p:50, cap:500, t:1.0, z:1.0, years:2},   // 专精特新/小巨人 最高50%，≤500万/年
+  "浦东": {p:30, cap:45,  t:1.33,z:1.0, years:2},   // 政策性担保贷：本金1.5%(首次2%)
+  "松江": {p:20, cap:30,  t:1.0, z:1.0, years:2},   // 流贷20% + 技改50%
+  "青浦": {p:25, cap:50,  t:1.0, z:1.0, years:2},
+  "奉贤": {p:50, cap:100, t:1.6, z:1.0, years:2},   // 小巨人80%(≤100万)、科技小巨人50%(≤50万)
+  "金山": {p:20, cap:50,  t:1.0, z:1.0, years:2},
+  "崇明": {p:20, cap:30,  t:1.0, z:1.0, years:2},
+  "市级": {p:0,  cap:0,   t:1,   z:1,   years:2}    // 专精特新市级贴息：利息30%，≤100万/企业
 };
 // 政策库（行业标签, 资质标签, 区域, 编码, 说明）
 const POLS = [
@@ -295,11 +297,11 @@ const POLS = [
   {c:"HK",  name:"虹口·信易贷 50%补息", area:"虹口", ind:"制造,科创,服务业", qual:"无", note:"3+3+4类，至2030年底"},
   {c:"JA",  name:"静安·产业贴息 20%", area:"静安", ind:"制造,科创,服务业", qual:"无", note:"≤50万，至2029.5"},
   {c:"XH",  name:"徐汇·科创贴息 30%", area:"徐汇", ind:"科创", qual:"高新,专精特新,小巨人", note:"≤30万"},
-  {c:"MH",  name:"闵行·免申即享 ≤LPR30%", area:"闵行", ind:"制造,科创", qual:"无", note:"平台直连"},
+  {c:"MH",  name:"闵行·高质量发展专项 ≤20%", area:"闵行", ind:"制造,科创", qual:"无", note:"平台直连，补贴期1年"},
   {c:"JD",  name:"嘉定·最高 50%", area:"嘉定", ind:"制造,科创", qual:"专精特新,小巨人", note:"≤500万/年"},
-  {c:"FX",  name:"奉贤·按资质 30%-60%", area:"奉贤", ind:"制造,科创", qual:"专精特新,小巨人", note:"国家级小巨人60%"},
+  {c:"FX",  name:"奉贤·按资质 30%-80%", area:"奉贤", ind:"制造,科创", qual:"专精特新,小巨人", note:"国家级小巨人80%"},
   {c:"SJ",  name:"松江·流贷20%+技改50%", area:"松江", ind:"制造", qual:"无", note:"长三角G60"},
-  {c:"BC",  name:"宝山·年化 1%", area:"宝山", ind:"制造,科创", qual:"无", note:"≤100万"},
+  {c:"BC",  name:"宝山·年化 1%", area:"宝山", ind:"制造,科创", qual:"无", note:"≤补贴期12个月"},
   {c:"CN",  name:"长宁·LPR20%", area:"长宁", ind:"数字,科创", qual:"无", note:"≤30万"},
   {c:"PT",  name:"普陀·科创贴息 25%", area:"普陀", ind:"科创,制造", qual:"高新", note:"≤30万"},
   {c:"YP",  name:"杨浦·科创贴息 25%", area:"杨浦", ind:"科创", qual:"高新,专精特新", note:"≤30万"},
@@ -336,33 +338,32 @@ function calc(){
   const swT = document.getElementById('swT').checked;
   const swZ = document.getElementById('swZ').checked;
 
-  const yearInt = amt * rate / 100;
+  const yearInt = amt * rate / 100;                       // 正常年利息
 
-  // 中央贴息
+  // 中央贴息（作用于年利息）
   let central = 0, cc = [];
-  if(loan==='固贷'){ central = amt*1.5/100; cc.push('C4'); }
-  else { central = amt*1/100; cc.push('C71'); }
+  if(loan==='固贷'){ central = yearInt * 1.5 / 100; cc.push('C4'); }
+  else { central = yearInt * 1.0 / 100; cc.push('C71'); }
   if(qual==='无' || qual==='科技型中小') cc.push('C5');
   if(qual!=='无'){ cc.push('SH2'); if(qual==='小巨人') cc.push('SH3','SH4'); }
 
-  // 区级贴息
+  // 区级贴息（作用于年利息，受年度上限约束）
   const pa = PARAMS[dist] || {p:0,cap:0,t:1,z:1,years:2};
   let ratio = pa.p/100;
   if(swT) ratio *= pa.t;
   if(swZ) ratio *= pa.z;
-  let distYear = Math.min(amt*ratio, pa.cap);
-  let distTotal = distYear * pa.years;
+  let distYear = Math.min(amt * ratio * rate / 100, pa.cap);   // 年利息 × 比例，且不超过年度上限
+  distYear = Math.max(distYear, 0);
 
-  // 区级编码
-  let dc = [];
-  if(ratio>0 && dist!=='市级'){
-    const hit = POLS.find(p=>p.area===dist);
-    if(hit) dc.push(hit.c);
-  }
+  // 每年合计贴息（不超过当年实际利息）
+  let yearTotal = central + distYear;
+  if(yearTotal > yearInt) yearTotal = yearInt;
 
-  const yearTotal = central + distYear;
-  const total = (central + distYear) * 2;
-  const realRate = Math.max(rate - (central+distYear)/amt*100, 0);
+  // 累计 = 每年合计贴息 × 该区贴息年限
+  const years = pa.years || 2;
+  const total = yearTotal * years;
+
+  const realRate = yearInt > 0 ? Math.max(rate - yearTotal / amt * 100, 0) : 0;
 
   document.getElementById('r_int').textContent = fmt(yearInt);
   document.getElementById('r_dist').textContent = fmt(distYear);
@@ -370,7 +371,8 @@ function calc(){
   document.getElementById('r_year').textContent = fmt(yearTotal);
   document.getElementById('r_sum').textContent = fmt(total);
   document.getElementById('r_rate').textContent = '贴息后实际利率 ' + realRate.toFixed(2) + '%';
-  document.getElementById('r_total').innerHTML = fmt(total).replace('万','<small> 万 / 2年</small>');
+  document.getElementById('r_years').textContent = '按贷款期限 ' + years + ' 年估算';
+  document.getElementById('r_total').innerHTML = fmt(total).replace('万','<small> 万 / '+years+'年</small>');
 
   const codes = [...new Set([...cc,...dc])].join(' + ')|| '—';
   document.getElementById('r_codes').textContent = '政策组合：' + codes;
@@ -378,7 +380,7 @@ function calc(){
   // 提示
   const tip = document.getElementById('r_tip');
   if(total>30){
-    tip.innerHTML = '🎯 2 年可省 <b>'+fmt(total)+'</b>，属于高价值客户，建议尽快对接银行经办机构。';
+    tip.innerHTML = '🎯 '+years+' 年可省 <b>'+fmt(total)+'</b>，属于高价值客户，建议尽快对接银行经办机构。';
     tip.style.background='#e8f5e9'; tip.style.color='#1b5e20';
   } else if(total>0){
     tip.innerHTML = '💡 可叠加 ' + ([...cc,...dc].length) + ' 项贴息，建议结合高新/专精特新认定进一步提升额度。';
@@ -394,7 +396,7 @@ function calc(){
 
   window._codes = [...new Set([...cc,...dc])];
   window._dist = dist;
-  window._result = {amt,rate,dist,qual,loan,total,yearTotal,realRate,codes};
+  window._result = {amt,rate,dist,qual,loan,total,yearTotal,realRate,codes,years};
 }
 window.calc = calc;
 
@@ -430,25 +432,23 @@ function submitLead(){
   };
   const leads = loadLeads(); leads.push(rec); saveLeads(leads);
 
-  // 回填汇总
   document.getElementById('lead_summary').innerHTML = `
     <div class="kv"><span>企业</span><b>${name}</b></div>
     <div class="kv"><span>联系人</span><b>${person}</b></div>
     <div class="kv"><span>所在区 / 资质</span><b>${rec.dist} · ${rec.qual}</b></div>
     <div class="kv"><span>贷款金额</span><b>${rec.amt} 万</b></div>
     <div class="kv"><span>政策组合</span><b>${rec.codes}</b></div>
-    <div class="kv"><span>2年预计节省</span><b style="color:#c62828;">${fmt(rec.save2y||0)}</b></div>`;
+    <div class="kv"><span>${r.years||2}年预计节省</span><b style="color:#c62828;">${fmt(rec.save2y||0)}</b></div>`;
   document.getElementById('lead_done').style.display='block';
   document.querySelector('.divider').textContent = '— 已收到 ' + leads.length + ' 位企业主咨询 · 实时更新 —';
   toast('提交成功，顾问将尽快联系');
-  // 自动导出一次备份
   setTimeout(exportLead, 300);
 }
 
 function exportLead(){
   const leads = loadLeads();
   if(!leads.length){ toast('暂无记录，请先提交一次'); return; }
-  let csv = '\ufeff企业,联系人,职务,手机号,备注,金额(万),所在区,资质,政策组合,2年节省(万),时间\n';
+  let csv = '\ufeff企业,联系人,职务,手机号,备注,金额(万),所在区,资质,政策组合,节省(万),时间\n';
   leads.forEach(l=>{
     const esc = s => '"'+(s||'').toString().replace(/"/g,'""')+'"';
     csv += [l.name,l.person,l.title,l.phone,l.memo,l.amt,l.dist,l.qual,l.codes,l.save2y,l.time].map(esc).join(',')+'\n';
