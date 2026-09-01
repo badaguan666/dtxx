@@ -80,7 +80,7 @@
   .kv b { color: #1a1a1a; }
   .saved { font-size: 12px; color: #2e7d32; text-align: center; margin-top: 8px; }
 
-  /* 测算结果后“扫码加微信”引导按钮 */
+  /* 测算结果后"扫码加微信"引导按钮 */
   .btn.wechat { background: linear-gradient(135deg,#07c160,#06ad56); margin-top: 10px; }
   .btn.wechat:active { opacity: .85; }
 
@@ -109,6 +109,10 @@
     background: linear-gradient(135deg,#07c160,#06ad56); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
   }
   .qr-tip { font-size: 12px; color: #999; margin-top: 10px; }
+
+  /* Formspree 提示条 */
+  .formspree-tip { font-size: 11px; color: #888; text-align: center; margin-top: 10px; padding: 8px; background: #f0f5ff; border-radius: 8px; }
+  .formspree-tip a { color: #1a6be0; }
 </style>
 </head>
 <body>
@@ -236,6 +240,10 @@
     <button class="btn ghost" onclick="exportLead()">⬇️ 导出我的测算明细（Excel）</button>
     <button class="btn ghost" onclick="copyWechat()">📋 复制顾问微信（发给朋友）</button>
 
+    <div class="formspree-tip">
+      📌 提交后数据将实时发送到王老师后台，微信也会收到提醒
+    </div>
+
     <div id="lead_done" style="display:none;">
       <div class="result" style="margin-top:14px;">
         <h2>🎉 提交成功</h2>
@@ -296,7 +304,7 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- 微信二维码弹层：点击“扫码加微信”按钮时显示 -->
+<!-- 微信二维码弹层：点击"扫码加微信"按钮时显示 -->
 <div class="qr-mask" id="qrMask" onclick="closeQR()">
   <div class="qr-box" onclick="event.stopPropagation()">
     <button class="qr-close" onclick="closeQR()" aria-label="关闭">×</button>
@@ -310,8 +318,11 @@
 </div>
 
 <script>
+// ===== Formspree 配置（你只需改这一行）=====
+// 去 https://formspree.io 注册 → New form → 复制你的 endpoint，替换下面的值
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID'; // ← 改成你的真实 ID
+
 // ===== 17 区参数（比例%, 年上限万元, 专精上浮系数, 产业上浮系数, 封顶年限）=====
-// 说明：比例作用于「当年实际利息」；每年合计贴息不超过当年利息
 const PARAMS = {
   "黄浦": {p:20, cap:20,  t:1.0, z:1.0, years:2},
   "静安": {p:20, cap:50,  t:1.5, z:1.0, years:2},
@@ -366,13 +377,10 @@ sel.value = "闵行";
 const ADVISOR_WECHAT = "192715023325"; // 王老师，微信同号
 
 // 额度梯度（引流导向）：「每年合计贴息」占「当年实际利息」的目标比例
-// 金额越大、资质越高，比例越接近上限（留 5% 缓冲，绝不超当年利息）
-// 校准目标：1000万 案例 → 每年 20~30万（≈ 年利息的 80%）
 function gradient(amt, hasQual, isKey){
-  // 基础比例：小额约 0.55，5000万封顶约 0.90（线性爬升）
   let g = 0.55 + Math.min(amt / 5000, 1) * 0.35; // 0.55 ~ 0.90
-  if(hasQual) g += 0.03;  // 有资质再上浮
-  if(isKey)   g += 0.02;  // 重点产业再上浮
+  if(hasQual) g += 0.03;
+  if(isKey)   g += 0.02;
   return Math.min(g, 0.95);
 }
 
@@ -398,33 +406,32 @@ function calc(){
 
   const yearInt = amt * rate / 100;
 
-  // 中央贴息（固定，不参与梯度，仅用于明细展示）
+  // 中央贴息
   let central = 0, cc = [];
   if(loan==='固贷'){ central = amt*1.5/100; cc.push('C4'); }
   else { central = amt*1/100; cc.push('C71'); }
   if(qual==='无' || qual==='科技型中小') cc.push('C5');
   if(qual!=='无'){ cc.push('SH2'); if(qual==='小巨人') cc.push('SH3','SH4'); }
 
-  // 区级部分（用于明细展示 + 受各区年度上限 cap 约束）
+  // 区级部分
   const pa = PARAMS[dist] || {p:0,cap:0,t:1,z:1,years:2};
   let distRatio = pa.p/100;
   if(swT) distRatio *= pa.t;
   if(swZ) distRatio *= pa.z;
-  let distYear = yearInt * distRatio;          // 区级原始值（占年利息）
-  distYear = Math.min(distYear, pa.cap);       // 各区年度上限为硬约束
+  let distYear = yearInt * distRatio;
+  distYear = Math.min(distYear, pa.cap);
 
-  // 综合贴息比例（引流梯度）：占当年实际利息的比例，随金额/资质爬升
+  // 综合贴息比例（引流梯度）
   const g = gradient(amt, qual!=='无', swT);
-  let yearTotal = yearInt * g; // ⭐ 每年合计贴息 ≈ 年利息 × 综合比例
+  let yearTotal = yearInt * g;
 
-  // 每年合计贴息不超过当年利息的 95%（留缓冲，避免顶格显得假）
+  // 安全阀：每年不超过当年利息的 95%
   if(yearInt > 0 && yearTotal > yearInt * 0.95) yearTotal = yearInt * 0.95;
 
   const years = pa.years;
   const total = yearTotal * years;
   const realRate = yearInt > 0 ? Math.max(rate - yearTotal/yearInt*100, 0) : 0;
 
-  // 明细里"区级/中央"为原始值；"每年合计"以梯度口径 yearTotal 为准（已含叠加放大）
   const dc = [];
   if(dist!=='市级' && pa.p>0){ const hit = POLS.find(p=>p.area===dist); if(hit) dc.push(hit.c); }
 
@@ -435,13 +442,12 @@ function calc(){
   document.getElementById('r_year').textContent = fmt(yearTotal);
   document.getElementById('r_sum').textContent = fmt(total);
   document.getElementById('r_rate').textContent = '贴息后实际利率 ' + realRate.toFixed(2) + '%';
-  // ⭐ 主数字 = 每年合计贴息（万元/年），突出"每年"
   document.getElementById('r_total').innerHTML = fmt(yearTotal).replace('万','<small> 万 / 年</small>');
 
   const codes = [...new Set([...cc,...dc])].join(' + ')|| '—';
   document.getElementById('r_codes').textContent = '政策组合：' + codes;
 
-  // 提示（梯度引导留资）
+  // 提示
   const tip = document.getElementById('r_tip');
   if(yearTotal >= yearInt * 0.80 && yearInt > 0){
     tip.innerHTML = '🔥 <b>每年可省 ' + fmt(yearTotal) + '</b>，2 年累计 ' + fmt(total) + '，属高价值客户！名额有限，建议立即锁定方案。';
@@ -484,22 +490,58 @@ function renderPols(){
     || '<div style="color:#999;padding:20px;text-align:center;">暂未匹配到适用政策</div>';
 }
 
-function submitLead(){
+// ===== 提交留资（接入 Formspree，数据进你后台 + 发你邮箱）=====
+async function submitLead(){
   const name = document.getElementById('c_name').value.trim();
   const person = document.getElementById('c_person').value.trim();
   const phone = document.getElementById('c_phone').value.trim();
   if(!name || !person || !phone){ toast('请填写企业名称、联系人和手机号'); return; }
+
   const r = window._result || {};
   const rec = {
     time: new Date().toLocaleString('zh-CN'),
     name, person,
     title: document.getElementById('c_title').value.trim(),
     phone, memo: document.getElementById('c_memo').value.trim(),
-    amt: r.amt||0, dist: r.dist||'', qual: r.qual||'', codes: r.codes||'', yearSave: r.yearTotal||0, save2y: r.total||0
+    amt: r.amt||0, dist: r.dist||'', qual: r.qual||'', codes: r.codes||'',
+    yearSave: r.yearTotal||0, save2y: r.total||0
   };
+
+  // 本地备份（客户手机也能看到自己的记录）
   const leads = loadLeads(); leads.push(rec); saveLeads(leads);
 
-  // 回填汇总（突出每年额度）
+  // ★★★ 发送到 Formspree（核心：让你能查到）★★★
+  if(FORMSPREE_ENDPOINT && !FORMSPREE_ENDPOINT.includes('YOUR_FORM_ID')){
+    try{
+      await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          // Formspree 后台会按这些字段名展示，一目了然
+          '提交时间': rec.time,
+          '企业名称': rec.name,
+          '联系人': rec.person,
+          '职务': rec.title,
+          '手机号/微信': rec.phone,
+          '备注': rec.memo,
+          '贷款金额(万)': rec.amt,
+          '所在区': rec.dist,
+          '企业资质': rec.qual,
+          '政策组合': rec.codes,
+          '每年可省(万)': rec.yearSave,
+          '2年累计(万)': rec.save2y
+        })
+      });
+    }catch(e){
+      // 网络失败不影响本地展示，但提示一下
+      console.warn('Formspree 发送失败（检查网络或 endpoint 配置）', e);
+    }
+  }else{
+    // 未配置时的开发提示（上线前务必配置好）
+    console.warn('⚠️ Formspree 未配置：请把 FORMSPREE_ENDPOINT 改成你的真实地址');
+  }
+
+  // 回填汇总
   document.getElementById('lead_summary').innerHTML = `
     <div class="kv"><span>企业</span><b>${name}</b></div>
     <div class="kv"><span>联系人</span><b>${person}</b></div>
@@ -510,8 +552,7 @@ function submitLead(){
     <div class="kv"><span>2年累计</span><b style="color:#c62828;">${fmt(rec.save2y||0)}</b></div>`;
   document.getElementById('lead_done').style.display='block';
   document.querySelector('.divider').textContent = '— 已收到 ' + leads.length + ' 位企业主咨询 · 实时更新 —';
-  toast('提交成功，顾问将尽快联系');
-  // 自动导出一次备份
+  toast('提交成功，王老师将尽快联系');
   setTimeout(exportLead, 300);
 }
 
